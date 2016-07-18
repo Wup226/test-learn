@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<a href="#download/iamge/Koala.jpg">download</a>
+<a href="#router/test">router test</a>
+
+<div id="container"></div>
+<br/>1<button id="btn1">button1</button>
+<script type="text/template" id="template_test">
+    <input id="name">
+    <span>0</span><button id="btn2">button2</button>
+</script>
+
+</body>
+<script type="text/javascript" src="underscore.js"></script>
+<script type="text/javascript" src="jquery-3.1.0.js"></script>
+<script type="text/javascript" src="backbone.js"></script>
+<script type="text/javascript" src="backbone.localStorage.js"></script>
+<script>
+    (function($){
+        //Model
+        var Man = Backbone.Model.extend({
+            initialize:function(){
+                alert("create a man");
+
+                this.on("change:name",function(){
+                    alert("name更改为"+ this.get('name'));
+                });
+            },
+            defaults:{
+                name:"aa",
+                age:"11"
+            },
+            aboutMe:function(){
+                return 'my name is'+ this.get('name');
+            }
+        });
+
+        //listenTo
+/*        var man1 = new Man;
+        var man2 = new Man;
+
+        man2.listenTo(man1,'change:name',function(){
+            this.set('name','cc');
+            alert(this.aboutMe());
+        });
+
+        man1.set('name','bb');*/
+
+        //Collection
+        var ManClass = Backbone.Collection.extend({
+            model:Man,
+            localStorage:new Backbone.LocalStorage("testLS")
+        });
+
+        //LocalStorage
+        //save
+        var man3 = new Man;
+        var manCollection = new ManClass;
+        manCollection.add(man3);
+        man3.save();
+
+        //get
+        alert(localStorage.getItem(localStorage.key(1)));
+
+        //clear
+        //localStorage.clear();
+
+
+
+/*        var man1 = new Man;
+        var man2 = new Man;
+        var manClass = new ManClass;
+
+        manClass.add(man1);
+        manClass.add(man2);
+
+        manClass.each(function(man){
+            alert(man.get('name'));
+        });*/
+
+        //Router
+        var RouterTest = Backbone.Router.extend({
+            routes:{
+                "download/*path":"downloadImage",
+                "router/:rTest":"actions"
+            },
+            downloadImage:function(path){
+                alert(path);
+            },
+            actions:function(rTest){
+                alert(rTest);
+            }
+        });
+
+        var tRouter = new RouterTest;
+        Backbone.history.start();
+
+        //View
+        var ViewTest = Backbone.View.extend({
+            el:'#container',
+            initialize:function(options){
+                this.render();
+            },
+            render:function(){
+                var template = _.template($("#template_test").html());
+                this.$el.html(template);
+            },
+            events:{
+                "click button":"eventHandle",
+                "blur #name":"eventHandle"
+            },
+            eventHandle:function(event){
+                alert(event.target.id);
+            }
+        });
+
+        var testV = new ViewTest;
+
+    })(jQuery);
+</script>
+</html>
